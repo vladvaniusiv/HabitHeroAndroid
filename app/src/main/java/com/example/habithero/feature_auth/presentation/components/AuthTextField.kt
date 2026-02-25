@@ -1,5 +1,6 @@
 package com.example.habithero.feature_auth.presentation.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ fun AuthTextField(
     )
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
 fun AuthTextFieldPreview() {
