@@ -12,8 +12,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.habithero.R
 import com.example.habithero.core.designsystem.BrandGreen
 import com.example.habithero.core.designsystem.HabitHeroShapes
 
@@ -30,7 +32,7 @@ fun HabitList(
             .padding(16.dp)
     ) {
         Text(
-            text = "Lista de hábitos",
+            text = stringResource(R.string.habit_list),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -52,7 +54,7 @@ fun HabitList(
             shape = HabitHeroShapes.medium,
             colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
         ) {
-            Text("+ Crear hábito", color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.create_habit), color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }

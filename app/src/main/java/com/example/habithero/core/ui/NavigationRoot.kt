@@ -1,15 +1,20 @@
 package com.example.habithero.core.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.habithero.feature_auth.presentation.screens.LoginScreen
-import com.example.habithero.feature_auth.presentation.screens.SignUpScreen
+import com.example.habithero.feature_auth.presentation.login.LoginRoute
+import com.example.habithero.feature_auth.presentation.signup.RegisterRoute
+import com.example.habithero.feature_home.presentation.home.HomeRoute
 import com.example.habithero.feature_home.presentation.screens.HomeScreen
 import com.example.habithero.feature_settings.presentation.screens.SettingsScreen
+import com.example.habithero.feature_settings.presentation.settings.SettingsRoute
 import com.example.habithero.feature_stats.presentation.screens.StatsScreen
+import com.example.habithero.feature_stats.presentation.stats.StatsRoute
 
 /**
  * Rutas de navegación
@@ -22,6 +27,7 @@ object Routes {
     const val SETTINGS = "settings"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationRoot(navController: NavHostController = rememberNavController()) {
     NavHost(
@@ -29,35 +35,36 @@ fun NavigationRoot(navController: NavHostController = rememberNavController()) {
         startDestination = Routes.LOGIN
     ) {
         composable(Routes.LOGIN) {
-            LoginScreen(
-                onLoginSuccess = { navController.navigate(Routes.HOME) },
-                onSignUpClick = { navController.navigate(Routes.SIGNUP) }
+            LoginRoute(
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateToSignUp = { navController.navigate(Routes.SIGNUP) }
             )
         }
         composable(Routes.SIGNUP) {
-            SignUpScreen(
-                onSignUpSuccess = { navController.navigate(Routes.HOME) },
-                onBackToLogin = { navController.popBackStack(Routes.LOGIN, inclusive = false) }
+            RegisterRoute(
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateBackToLogin = { navController.popBackStack(Routes.LOGIN, inclusive = false) }
             )
         }
         composable(Routes.HOME) {
-            HomeScreen(
+            HomeRoute(
                 onNavigateToStats = { navController.navigate(Routes.STATS) },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
             )
         }
         composable(Routes.STATS) {
-            StatsScreen(
+            StatsRoute(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToHome = { navController.navigate(Routes.HOME) },
-                onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
+                onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
+
             )
         }
         composable(Routes.SETTINGS) {
-            SettingsScreen(
+            SettingsRoute(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToStats = { navController.navigate(Routes.STATS) },
-                onNavigateToHome = { navController.navigate(Routes.HOME) }
+                onNavigateToHome = { navController.navigate(Routes.HOME) },
+                onNavigateToStats = { navController.navigate(Routes.STATS) }
             )
         }
     }

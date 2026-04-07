@@ -14,9 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.habithero.R
 import com.example.habithero.core.designsystem.HabitHeroShapes
 import com.example.habithero.core.designsystem.HabitHeroTheme
 
@@ -29,13 +31,13 @@ fun ChangePasswordSection(
     var confirm by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Cambiar contraseña", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.change_passw_title), style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = current,
             onValueChange = { current = it },
-            label = { Text("Contraseña actual") },
+            label = { Text(stringResource(R.string.current_passw)) },
             modifier = Modifier.fillMaxWidth(),
             shape = HabitHeroShapes.extraLarge,
             visualTransformation = PasswordVisualTransformation()
@@ -45,7 +47,7 @@ fun ChangePasswordSection(
         OutlinedTextField(
             value = new,
             onValueChange = { new = it },
-            label = { Text("Nueva contraseña") },
+            label = { Text(stringResource(R.string.new_passw_label)) },
             modifier = Modifier.fillMaxWidth(),
             shape = HabitHeroShapes.extraLarge,
             visualTransformation = PasswordVisualTransformation()
@@ -55,13 +57,13 @@ fun ChangePasswordSection(
         OutlinedTextField(
             value = confirm,
             onValueChange = { confirm = it },
-            label = { Text("Confirma la contraseña") },
+            label = { Text(stringResource(R.string.confirm_passw_label)) },
             modifier = Modifier.fillMaxWidth(),
             shape = HabitHeroShapes.extraLarge,
             visualTransformation = PasswordVisualTransformation()
         )
 
-        Button(onClick = { onPasswordChange(current, new, confirm) }) { Text("Guardar") }
+        Button(onClick = { onPasswordChange(current, new, confirm) }) { Text(stringResource(R.string.save)) }
     }
 }
 

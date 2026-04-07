@@ -13,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.habithero.R
 import com.example.habithero.core.designsystem.HabitHeroShapes
 import com.example.habithero.core.designsystem.HabitHeroTheme
 
@@ -54,10 +56,10 @@ fun ProfileSection(
     var emailError by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Configuración del perfil", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.account_config_title), style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Nombre", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.name), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = name,
             onValueChange = {
@@ -75,7 +77,7 @@ fun ProfileSection(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Nombre de usuario", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.username), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = userName,
             onValueChange = {
@@ -93,7 +95,7 @@ fun ProfileSection(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Correo electrónico", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.email), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = email,
             onValueChange = {

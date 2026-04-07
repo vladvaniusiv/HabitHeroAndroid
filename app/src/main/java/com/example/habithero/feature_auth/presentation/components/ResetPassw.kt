@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.habithero.R
 import com.example.habithero.core.designsystem.BrandGreen
 import com.example.habithero.core.designsystem.HabitHeroShapes
 import com.example.habithero.core.designsystem.HabitHeroTheme
@@ -34,23 +36,23 @@ fun ResetPasswordDialog(
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
             ) {
-                Text("Resetear la contraseña", color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.reset_password_confirm_button), color = MaterialTheme.colorScheme.onPrimary)
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("Cancelar")
+                Text(stringResource(R.string.reset_password_cancel_button))
             }
         },
-        title = { Text("Recuperar contraseña") },
+        title = { Text(stringResource(R.string.reset_password_title)) },
         text = {
             Column {
-                Text("Introduce tu correo electrónico para resetear la contraseña:")
+                Text(stringResource(R.string.reset_password_description))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = resetEmail,
                     onValueChange = { onEmailChange(it) },
-                    label = { Text("Correo electrónico") },
+                    label = { Text(stringResource(R.string.reset_password_email_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = HabitHeroShapes.extraLarge
                 )

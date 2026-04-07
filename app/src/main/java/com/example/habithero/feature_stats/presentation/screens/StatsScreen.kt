@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.habithero.R
@@ -25,25 +26,26 @@ import com.example.habithero.core.ui.Routes
 import com.example.habithero.core.ui.components.BottomBar
 import com.example.habithero.core.ui.components.TopBar
 import com.example.habithero.feature_stats.presentation.components.WeeklyChart
+import com.example.habithero.feature_stats.presentation.stats.StatsAction
+import com.example.habithero.feature_stats.presentation.stats.StatsUiState
 
 @Composable
 fun StatsScreen(
-    onNavigateBack: () -> Unit,
-    onNavigateToHome: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    uiState: StatsUiState,
+    onAction: (StatsAction) -> Unit
 ) {
-    val weeklyProgress = listOf(1f, 0.8f, 0.6f, 0f)
+    val weeklyProgress = uiState.weeklyProgress
 
     Scaffold(
-        topBar = { TopBar(titleRes = R.string.stats, onBackClick = onNavigateBack) },
+        topBar = { TopBar(titleRes = R.string.stats, onBackClick = { onAction(StatsAction.OnBackClicked) }) },
 
         bottomBar = {
             BottomBar(
                 currentRoute = Routes.STATS,
                 onNavigate = { route ->
                     when (route) {
-                        Routes.HOME -> onNavigateToHome()
-                        Routes.SETTINGS -> onNavigateToSettings()
+                        Routes.HOME -> onAction(StatsAction.OnHomeClicked)
+                        Routes.SETTINGS -> onAction(StatsAction.OnSettingsClicked)
                         Routes.STATS -> {}
                     }
                 }
@@ -73,7 +75,7 @@ fun StatsScreen(
 
             // Logros
             Text(
-                text = "Logros",
+                text = stringResource(R.string.achievements),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -113,9 +115,8 @@ fun StatsScreen(
 fun StatsScreenPreview() {
     HabitHeroTheme {
         StatsScreen(
-            onNavigateBack = {},
-            onNavigateToHome = {},
-            onNavigateToSettings = {}
+            uiState = StatsUiState(),
+            onAction = {}
         )
     }
 }

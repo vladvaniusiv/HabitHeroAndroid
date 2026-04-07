@@ -15,13 +15,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +29,8 @@ import com.example.habithero.R
 import com.example.habithero.core.designsystem.BrandBlue
 import com.example.habithero.core.designsystem.BrandGreen
 import com.example.habithero.core.designsystem.HabitHeroTheme
+import com.example.habithero.feature_auth.presentation.login.LoginAction
+import com.example.habithero.feature_auth.presentation.login.LoginUiState
 import com.example.habithero.feature_auth.presentation.components.AuthTextField
 import com.example.habithero.feature_auth.presentation.components.ResetPasswordDialog
 import com.example.habithero.feature_auth.presentation.components.SocialLoginRow
@@ -36,13 +38,12 @@ import com.example.habithero.feature_auth.presentation.components.SocialLoginRow
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
+    uiState: LoginUiState,
+    onAction: (LoginAction) -> Unit,
     onSignUpClick: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var showResetDialog by remember { mutableStateOf(false) }
-    var resetEmail by remember { mutableStateOf("") }
+    var showResetDialog = remember { mutableStateOf(false) }
+    var resetEmail = remember { mutableStateOf(uiState.email) }
 
     Column(
         modifier = Modifier
@@ -56,27 +57,60 @@ fun LoginScreen(
             modifier = Modifier.size(250.dp)
         )
 
-        AuthTextField(valueState = mutableStateOf(email), label = "Email")
+        val emailState = remember(uiState.email) { mutableStateOf(uiState.email) }
+
+        AuthTextField(
+            valueState = emailState,
+            label = stringResource(R.string.email)
+        )
+
+        LaunchedEffect(emailState.value) {
+            if (emailState.value != uiState.email) {
+                onAction(LoginAction.OnEmailChanged(emailState.value))
+            }
+        }
+
+
         Spacer(modifier = Modifier.height(16.dp))
-        AuthTextField(valueState = mutableStateOf(password), label = "Password", isPassword = true)
+        val passwordState = remember(uiState.password) { mutableStateOf(uiState.password) }
+
+        AuthTextField(
+            valueState = passwordState,
+            label = stringResource(R.string.password),
+            isPassword = true
+        )
+
+        LaunchedEffect(passwordState.value) {
+            if (passwordState.value != uiState.password) {
+                onAction(LoginAction.OnPasswordChanged(passwordState.value))
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "¿Olvidaste la contraseña?",
+            text = stringResource(R.string.forgot_password),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold,
                 color = BrandBlue),
-            modifier = Modifier.clickable { showResetDialog = true }
+            modifier = Modifier.clickable { showResetDialog.value = true }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = onLoginSuccess,
+            onClick = { onAction(LoginAction.OnLoginClicked) },
             modifier = Modifier.fillMaxWidth(0.8f),
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
         ) {
-            Text("Log In", color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.log_in), color = MaterialTheme.colorScheme.onPrimary)
+        }
+
+        uiState.errorMessage?.let { error ->
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -86,12 +120,12 @@ fun LoginScreen(
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
         ) {
-            Text("Sign Up", color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.sign_up), color = MaterialTheme.colorScheme.onPrimary)
         }
 
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "O continúa con", style = MaterialTheme.typography.labelSmall)
+        Text(text = stringResource(R.string.continue_with), style = MaterialTheme.typography.labelSmall)
 
         Spacer(modifier = Modifier.height(8.dp))
         SocialLoginRow(
@@ -101,19 +135,18 @@ fun LoginScreen(
         )
     }
 
-
-    // Modal de reset de contraseña
-    if (showResetDialog) {
+    if (showResetDialog.value) {
         ResetPasswordDialog(
-            resetEmail = resetEmail,
-            onEmailChange = { resetEmail = it },
-            onDismiss = { showResetDialog = false },
+            resetEmail = resetEmail.value,
+            onEmailChange = { resetEmail.value = it },
+            onDismiss = { showResetDialog.value = false },
             onConfirm = {
-            // TODO: lógica para resetear contraseña con resetEmail
-                showResetDialog = false
-            } )
-        }
+                // TODO llamar a un caso de uso
+                showResetDialog.value = false
+            }
+        )
     }
+}
 
 
 
@@ -121,6 +154,10 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     HabitHeroTheme {
-        LoginScreen(onLoginSuccess = {}, onSignUpClick = {})
+        LoginScreen(
+            uiState = LoginUiState(),
+            onAction = {},
+            onSignUpClick = {}
+        )
     }
 }

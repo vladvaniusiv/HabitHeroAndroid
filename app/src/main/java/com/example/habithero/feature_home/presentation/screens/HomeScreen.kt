@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.remote.creation.second
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,8 @@ import com.example.habithero.core.ui.components.BottomBar
 import com.example.habithero.core.ui.components.TopBar
 import com.example.habithero.feature_home.presentation.components.HabitList
 import com.example.habithero.feature_home.presentation.components.ProgressSummary
+import com.example.habithero.feature_home.presentation.home.HomeAction
+import com.example.habithero.feature_home.presentation.home.HomeUiState
 
 // Método para modificar avatar
 private fun changeAvatar() {
@@ -35,21 +38,13 @@ private fun changeAvatar() {
 
 @Composable
 fun HomeScreen(
-    onNavigateToStats: () -> Unit,
-    onNavigateToSettings: () -> Unit
-) {
-    var habits by remember {
-        mutableStateOf(
-            listOf(
-                "Meditar 10 minutos" to true,
-                "Leer 20 páginas" to true,
-                "Beber 2L de agua" to true,
-                "Caminar 30 minutos" to false
-            )
-        )
-    }
-
-    val progress = habits.count { it.second }.toFloat() / habits.size
+    uiState: HomeUiState,
+    onAction: (HomeAction) -> Unit
+){
+    val habits = uiState.habits
+    val progress = if (habits.isNotEmpty()) {
+        habits.count { it.second }.toFloat() / habits.size
+    } else 0f
 
     Scaffold(
         topBar = {
@@ -60,8 +55,8 @@ fun HomeScreen(
                 currentRoute = "home",
                 onNavigate = { route ->
                     when (route) {
-                        "stats" -> onNavigateToStats()
-                        "settings" -> onNavigateToSettings()
+                        "stats" -> onAction(HomeAction.OnStatsClicked)
+                        "settings" -> onAction(HomeAction.OnSettingsClicked)
                     }
                 }
             )
@@ -94,10 +89,8 @@ fun HomeScreen(
             // Lista de hábitos
             HabitList(
                 habits = habits,
-                onHabitChecked = { name, checked ->
-                    habits = habits.map {
-                        if (it.first == name) name to checked else it
-                    }
+                onHabitChecked = { habitName, checked ->
+                    onAction(HomeAction.OnToggleHabit(habitName, checked))
                 },
                 onCreateHabit = {
                     // TODO: lógica para crear hábito
@@ -116,6 +109,8 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HabitHeroTheme {
-        HomeScreen(onNavigateToStats = {}, onNavigateToSettings = {})
+        HomeScreen(
+            uiState = HomeUiState(),onAction = {}
+        )
     }
 }

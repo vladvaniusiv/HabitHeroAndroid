@@ -21,32 +21,33 @@ import com.example.habithero.core.ui.components.BottomBar
 import com.example.habithero.core.ui.components.TopBar
 import com.example.habithero.feature_settings.presentation.ChangePasswordSection
 import com.example.habithero.feature_settings.presentation.ProfileSection
+import com.example.habithero.feature_settings.presentation.settings.SettingsAction
+import com.example.habithero.feature_settings.presentation.settings.SettingsUiState
 
 @Composable
 fun SettingsScreen(
-    onNavigateBack: () -> Unit,
-    onNavigateToStats: () -> Unit,
-    onNavigateToHome: () -> Unit
+    uiState: SettingsUiState,
+    onAction: (SettingsAction) -> Unit
 ) {
-    var name by remember { mutableStateOf("Vlad Vaniusiv") }
-    var userName by remember { mutableStateOf("@vladvan") }
-    var email by remember { mutableStateOf("vlad@gmail.com") }
-
     Scaffold(
-        topBar = { TopBar(titleRes = R.string.settings, onBackClick = onNavigateBack) },
-          bottomBar = {
+        topBar = {
+            TopBar(
+                titleRes = R.string.settings,
+                onBackClick = { onAction(SettingsAction.OnBackClicked) }
+            )
+        },
+        bottomBar = {
             BottomBar(
-                currentRoute = Routes.SETTINGS, // ruta correcta
+                currentRoute = Routes.SETTINGS,
                 onNavigate = { route ->
                     when (route) {
-                        Routes.HOME -> onNavigateToHome()
-                        Routes.STATS -> onNavigateToStats()
-                        Routes.SETTINGS -> { /* ya estamos en settings */ }
+                        Routes.HOME -> onAction(SettingsAction.OnNavigateHome)
+                        Routes.STATS -> onAction(SettingsAction.OnNavigateStats)
+                        Routes.SETTINGS -> {}
                     }
                 }
             )
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -55,19 +56,19 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
             ProfileSection(
-                initialName = name,
-                initialUserName = userName,
-                initialEmail = email,
-                onNameChange = { name = it },
-                onUserNameChange = { userName = it },
-                onEmailChange = { email = it }
+                initialName = uiState.name,
+                initialUserName = uiState.userName,
+                initialEmail = uiState.email,
+                onNameChange = { onAction(SettingsAction.OnNameChanged(it)) },
+                onUserNameChange = { onAction(SettingsAction.OnUserNameChanged(it)) },
+                onEmailChange = { onAction(SettingsAction.OnEmailChanged(it)) }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             ChangePasswordSection(
                 onPasswordChange = { current, new, confirm ->
-                    // TODO: lógica de cambio de contraseña
+                    onAction(SettingsAction.OnPasswordChange(current, new, confirm))
                 }
             )
         }
@@ -79,9 +80,12 @@ fun SettingsScreen(
 fun SettingsScreenPreview() {
     HabitHeroTheme {
         SettingsScreen(
-            onNavigateBack = {},
-            onNavigateToStats = {},
-            onNavigateToHome = {}
+            uiState = SettingsUiState(
+                name = "Vlad Vaniusiv",
+                userName = "@vladvan",
+                email = "vlad@gmail.com"
+            ),
+            onAction = {}
         )
     }
 }
