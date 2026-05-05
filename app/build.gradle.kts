@@ -50,6 +50,8 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation(libs.androidx.compose.remote.creation.core)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.ktx)
 
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

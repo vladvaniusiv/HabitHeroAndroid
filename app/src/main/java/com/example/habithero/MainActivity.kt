@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.habithero.core.designsystem.HabitHeroTheme
+import com.example.habithero.core.di.dataSourceModule
+import com.example.habithero.core.di.databaseModule
+import com.example.habithero.core.di.networkModule
 import com.example.habithero.core.di.repositoryModule
 import com.example.habithero.core.di.useCaseModule
 import com.example.habithero.core.di.viewModelModule
@@ -26,6 +29,9 @@ class MainActivity : ComponentActivity() {
         startKoin {
             androidContext(this@MainActivity)
             modules(
+                databaseModule,
+                networkModule,
+                dataSourceModule,
                 repositoryModule,
                 useCaseModule,
                 viewModelModule

@@ -10,6 +10,8 @@ activityCompose = "1.8.0"
 composeBom = "2024.09.00"
 navigationCompose = "2.7.7"
 remoteCreationCore = "1.0.0-alpha07"
+roomCommonJvm = "2.8.4"
+roomKtx = "2.8.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +32,8 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version = "2.6.0" }
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-remote-creation-core = { group = "androidx.compose.remote", name = "remote-creation-core", version.ref = "remoteCreationCore" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
