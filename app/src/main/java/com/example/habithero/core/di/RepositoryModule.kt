@@ -21,7 +21,7 @@ val repositoryModule = module {
     single<StatsRepository> { FakeStatsRepository() }
     single<SettingsRepository> { FakeSettingsRepository() }
 */
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
     single<HabitRepository> { HabitRepositoryImpl(get(), get()) }
     single<StatsRepository> { StatsRepositoryImpl(get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl() }

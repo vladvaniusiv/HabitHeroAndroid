@@ -2,6 +2,9 @@ package com.example.habithero.data.remote.api
 
 import com.example.habithero.data.remote.dto.HabitDto
 import com.example.habithero.data.remote.dto.HabitProgressDto
+import com.example.habithero.data.remote.dto.LoginRequestDto
+import com.example.habithero.data.remote.dto.LoginResponseDto
+import com.example.habithero.data.remote.dto.RegisterRequestDto
 import com.example.habithero.data.remote.dto.UserDto
 import com.example.habithero.data.remote.dto.WeeklyStatsRequestDto
 import retrofit2.http.Body
@@ -13,10 +16,10 @@ import retrofit2.http.Query
 interface HabitHeroApi {
 
     @POST("auth/login")
-    suspend fun login(@Body body: UserDto)
+    suspend fun login(@Body body: LoginRequestDto): LoginResponseDto
 
     @POST("auth/register")
-    suspend fun register(@Body body: UserDto)
+    suspend fun register(@Body body: RegisterRequestDto): LoginResponseDto
 
     @GET("habits/{userId}")
     suspend fun getHabits(@Path("userId") userId: Int): List<HabitDto>

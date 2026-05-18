@@ -6,6 +6,8 @@ import com.example.habithero.core.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import retrofit2.HttpException
 
 class RegisterViewModel(
     private val registerUseCase: RegisterUseCase
@@ -75,13 +77,32 @@ class RegisterViewModel(
                 _events.send(RegisterEvent.NavigateToHome)
 
             } catch (e: IllegalArgumentException) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = e.message
+                )
                 _events.send(RegisterEvent.ShowError(e.message ?: "Error de validación"))
-
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val message = extractErrorMessage(errorBody) ?: "Error en el servidor"
+                _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = message)
+                _events.send(RegisterEvent.ShowError(message))
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "Error inesperado") }
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Error inesperado"
+                )
                 _events.send(RegisterEvent.ShowError("Error inesperado"))
             }
+        }
+    }
+
+    private fun extractErrorMessage(json: String?): String? {
+        return try {
+            val obj = JSONObject(json ?: return null)
+            obj.getString("error")
+        } catch (e: Exception) {
+            null
         }
     }
 }

@@ -53,7 +53,8 @@ dependencies {
     implementation(libs.androidx.compose.remote.creation.core)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.common.jvm)
-    ksp("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.8.4")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
