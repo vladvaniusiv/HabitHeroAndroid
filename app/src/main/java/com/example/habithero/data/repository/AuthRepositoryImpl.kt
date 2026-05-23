@@ -6,16 +6,19 @@ import com.example.habithero.core.domain.repository.AuthRepository
 import com.example.habithero.data.local.datastore.SessionDataStore
 import com.example.habithero.data.local.datasource.UserLocalDataSource
 import com.example.habithero.data.mapper.toEntity
+import com.example.habithero.data.remote.api.HabitHeroApi
 import com.example.habithero.data.remote.datasource.AuthRemoteDataSource
+import com.example.habithero.data.remote.dto.LoginRequestDto
 
 class AuthRepositoryImpl(
     private val remote: AuthRemoteDataSource,
     private val local: UserLocalDataSource,
-    private val session: SessionDataStore
+    private val session: SessionDataStore,
+    private val habitHeroApi: HabitHeroApi
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): LoginResult {
-        val response = remote.login(email, password)
+        val response = habitHeroApi.login(LoginRequestDto(email, password))
 
         // Guardar token en DataStore
         session.saveToken(response.token)

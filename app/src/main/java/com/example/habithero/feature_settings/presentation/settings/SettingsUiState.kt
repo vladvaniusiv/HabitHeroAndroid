@@ -6,5 +6,7 @@ data class SettingsUiState(
     val email: String = "",
     val avatar: ByteArray? = null,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val userNameError: String? = null,
+    val emailError: String? = null
 )

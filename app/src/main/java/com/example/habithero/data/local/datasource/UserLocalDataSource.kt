@@ -13,6 +13,6 @@ class UserLocalDataSource(
     }
 
     suspend fun saveUser(user: UserEntity) {
-        dao.saveUser(user)
+        dao.insertUser(user)
     }
 }

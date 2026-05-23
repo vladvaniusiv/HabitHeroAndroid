@@ -32,8 +32,8 @@ class StatsViewModel(
         viewModelScope.launch {
             try {
                 val habitId = 1
-                val startDate = "2024-01-01"
-                val endDate = "2024-12-31"
+                val startDate = LocalDate.now().minusDays(7).toString()
+                val endDate = LocalDate.now().toString()
 
                 getWeeklyStatsUseCase(habitId, startDate, endDate)
                     .collect { progressList ->

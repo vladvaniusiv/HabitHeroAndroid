@@ -14,5 +14,8 @@ interface UserDao {
     fun getUser(): Flow<UserEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveUser(user: UserEntity)
+    suspend fun insertUser(user: UserEntity)
+
+    @Query("UPDATE users SET name = :name, username = :username, email = :email")
+    suspend fun updateProfile(name: String, username: String, email: String)
 }

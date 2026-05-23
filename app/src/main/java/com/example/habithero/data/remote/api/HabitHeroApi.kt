@@ -1,16 +1,21 @@
 package com.example.habithero.data.remote.api
 
+import com.example.habithero.data.remote.dto.AvailabilityResponseDto
 import com.example.habithero.data.remote.dto.HabitDto
 import com.example.habithero.data.remote.dto.HabitProgressDto
 import com.example.habithero.data.remote.dto.LoginRequestDto
 import com.example.habithero.data.remote.dto.LoginResponseDto
 import com.example.habithero.data.remote.dto.RegisterRequestDto
 import com.example.habithero.data.remote.dto.RegisterResponseDto
+import com.example.habithero.data.remote.dto.UpdatePasswordRequestDto
+import com.example.habithero.data.remote.dto.UpdateProfileDto
 import com.example.habithero.data.remote.dto.UserDto
 import com.example.habithero.data.remote.dto.WeeklyStatsRequestDto
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -22,13 +27,50 @@ interface HabitHeroApi {
     @POST("auth/register")
     suspend fun register(@Body body: RegisterRequestDto): RegisterResponseDto
 
-    @GET("habits/{userId}")
-    suspend fun getHabits(@Path("userId") userId: Int): List<HabitDto>
+    @GET("habits")
+    suspend fun getHabits(
+        @Header("Authorization") token: String
+    ): List<HabitDto>
 
     @POST("habits")
-    suspend fun createHabit(@Body habit: HabitDto)
+    suspend fun createHabit(
+        @Header("Authorization") token: String,
+        @Body habit: HabitDto
+    )
 
     @POST("stats/weekly")
-    suspend fun getWeeklyStats(@Body body: WeeklyStatsRequestDto): List<HabitProgressDto>
+    suspend fun getWeeklyStats(
+        @Header("Authorization") token: String,
+        @Body body: WeeklyStatsRequestDto
+    ): List<HabitProgressDto>
 
+
+    @GET("user/profile")
+    suspend fun getUserProfile(
+        @Header("Authorization") token: String
+    ): UserDto
+
+    @GET("user/check-username")
+    suspend fun checkUsername(
+        @Header("Authorization") token: String,
+        @Query("username") username: String
+    ): AvailabilityResponseDto
+
+    @GET("user/check-email")
+    suspend fun checkEmail(
+        @Header("Authorization") token: String,
+        @Query("email") email: String
+    ): AvailabilityResponseDto
+
+    @PUT("user/profile")
+    suspend fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body body: UpdateProfileDto
+    )
+
+    @PUT("settings/change-password")
+    suspend fun updatePassword(
+        @Header("Authorization") token: String,
+        @Body body: UpdatePasswordRequestDto
+    )
 }

@@ -59,9 +59,12 @@ fun SettingsScreen(
                 initialName = uiState.name,
                 initialUserName = uiState.userName,
                 initialEmail = uiState.email,
+                userNameError = uiState.userNameError,
+                emailError = uiState.emailError,
                 onNameChange = { onAction(SettingsAction.OnNameChanged(it)) },
                 onUserNameChange = { onAction(SettingsAction.OnUserNameChanged(it)) },
-                onEmailChange = { onAction(SettingsAction.OnEmailChanged(it)) }
+                onEmailChange = { onAction(SettingsAction.OnEmailChanged(it)) },
+                onSaveClick = { onAction(SettingsAction.OnSaveProfile) }
             )
 
             Spacer(modifier = Modifier.height(24.dp))

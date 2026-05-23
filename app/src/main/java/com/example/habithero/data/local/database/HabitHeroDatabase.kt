@@ -15,7 +15,7 @@ import com.example.habithero.data.local.entity.UserEntity
         HabitProgressEntity::class,
         UserEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class HabitHeroDatabase : RoomDatabase() {

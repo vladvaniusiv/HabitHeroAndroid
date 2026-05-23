@@ -24,15 +24,21 @@ class HomeViewModel(
     }
 
     private fun loadHabits() {
-        // datos fake para que compile
-        _uiState.value = HomeUiState(
-            habits = listOf(
-                "Meditar 10 minutos" to true,
-                "Leer 20 páginas" to true,
-                "Beber 2L de agua" to true,
-                "Caminar 30 minutos" to false
-            )
-        )
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            habitRepository.getHabitsForUser(userId = 1)
+                .catch { e ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+                }
+                .collect { list ->
+                    _uiState.update { state ->
+                        state.copy(
+                            habits = list.map { it.title to false },
+                            isLoading = false
+                        )
+                    }
+                }
+        }
     }
 
     fun onAction(action: HomeAction) {

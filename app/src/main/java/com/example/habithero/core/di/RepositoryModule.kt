@@ -8,6 +8,8 @@ import com.example.habithero.data.fake.FakeAuthRepository
 import com.example.habithero.data.fake.FakeHabitRepository
 import com.example.habithero.data.fake.FakeSettingsRepository
 import com.example.habithero.data.fake.FakeStatsRepository
+import com.example.habithero.data.local.datasource.SettingsLocalDataSource
+import com.example.habithero.data.remote.datasource.SettingsRemoteDataSource
 import com.example.habithero.data.repository.AuthRepositoryImpl
 import com.example.habithero.data.repository.HabitRepositoryImpl
 import com.example.habithero.data.repository.SettingsRepositoryImpl
@@ -21,9 +23,11 @@ val repositoryModule = module {
     single<StatsRepository> { FakeStatsRepository() }
     single<SettingsRepository> { FakeSettingsRepository() }
 */
-    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get()) }
-    single<HabitRepository> { HabitRepositoryImpl(get(), get()) }
-    single<StatsRepository> { StatsRepositoryImpl(get(), get()) }
-    single<SettingsRepository> { SettingsRepositoryImpl() }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(),get()) }
+    single<HabitRepository> { HabitRepositoryImpl(get(), get(), get()) }
+    single<StatsRepository> { StatsRepositoryImpl(get(), get(), get()) }
+    single<SettingsLocalDataSource> { SettingsLocalDataSource(get()) }
+    single<SettingsRemoteDataSource> { SettingsRemoteDataSource(get()) }
+    single<SettingsRepository> { SettingsRepositoryImpl(get(), get(), get()) }
 
 }

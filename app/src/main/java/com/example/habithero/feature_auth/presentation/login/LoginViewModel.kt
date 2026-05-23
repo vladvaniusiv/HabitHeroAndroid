@@ -65,6 +65,7 @@ class LoginViewModel(
                 _uiState.value = state.copy(isLoading = false, errorMessage = message)
                 _events.send(LoginEvent.ShowError(message))
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Error inesperado"

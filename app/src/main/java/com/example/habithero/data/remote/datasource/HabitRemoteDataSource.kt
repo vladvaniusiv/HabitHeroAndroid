@@ -7,11 +7,11 @@ class HabitRemoteDataSource(
     private val api: HabitHeroApi
 ) {
 
-    suspend fun getHabits(userId: Int): List<HabitDto> {
-        return api.getHabits(userId)
+    suspend fun getHabits(token: String): List<HabitDto> {
+        return api.getHabits("Bearer $token")
     }
 
-    suspend fun createHabit(habit: HabitDto) {
-        api.createHabit(habit)
+    suspend fun createHabit(token: String, habit: HabitDto) {
+        api.createHabit("Bearer $token", habit)
     }
 }
