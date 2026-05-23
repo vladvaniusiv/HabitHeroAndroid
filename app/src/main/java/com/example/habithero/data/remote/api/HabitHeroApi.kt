@@ -5,6 +5,7 @@ import com.example.habithero.data.remote.dto.HabitProgressDto
 import com.example.habithero.data.remote.dto.LoginRequestDto
 import com.example.habithero.data.remote.dto.LoginResponseDto
 import com.example.habithero.data.remote.dto.RegisterRequestDto
+import com.example.habithero.data.remote.dto.RegisterResponseDto
 import com.example.habithero.data.remote.dto.UserDto
 import com.example.habithero.data.remote.dto.WeeklyStatsRequestDto
 import retrofit2.http.Body
@@ -19,7 +20,7 @@ interface HabitHeroApi {
     suspend fun login(@Body body: LoginRequestDto): LoginResponseDto
 
     @POST("auth/register")
-    suspend fun register(@Body body: RegisterRequestDto): LoginResponseDto
+    suspend fun register(@Body body: RegisterRequestDto): RegisterResponseDto
 
     @GET("habits/{userId}")
     suspend fun getHabits(@Path("userId") userId: Int): List<HabitDto>

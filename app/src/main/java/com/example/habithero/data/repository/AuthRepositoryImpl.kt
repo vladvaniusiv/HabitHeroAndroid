@@ -43,24 +43,19 @@ class AuthRepositoryImpl(
     override suspend fun register(user: User): LoginResult {
         val response = remote.register(user.name, user.email, user.password)
 
-        session.saveToken(response.token)
-        session.saveUserId(response.userId)
-        session.setLoggedIn(true)
-
-        local.saveUser(
-            User(
-                id = response.userId,
-                name = response.name,
-                username = response.name.lowercase(),
-                email = response.email,
-                password = ""
-            ).toEntity()
+       val localUser = User(
+            id = response.id,
+            name = user.name,
+            username = user.name.lowercase(),
+            email = response.email,
+            password = ""
         )
+        local.saveUser(localUser.toEntity())
 
         return LoginResult(
-            token = response.token,
-            userId = response.userId,
-            name = response.name,
+            token = "",
+            userId = response.id,
+            name = user.name,
             email = response.email
         )
     }
