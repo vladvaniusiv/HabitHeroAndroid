@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.compose.remote.creation.core)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.ui.graphics)
     ksp("androidx.room:room-compiler:2.8.4")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 

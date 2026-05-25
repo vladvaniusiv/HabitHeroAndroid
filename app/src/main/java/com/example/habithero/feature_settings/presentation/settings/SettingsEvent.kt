@@ -6,4 +6,5 @@ sealed interface SettingsEvent {
     data object NavigateToStats : SettingsEvent
     data object ShowAvatarPicker : SettingsEvent
     data class ShowMessage(val message: String) : SettingsEvent
+    data object NavigateToLogin : SettingsEvent
 }

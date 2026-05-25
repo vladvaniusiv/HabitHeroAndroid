@@ -3,6 +3,9 @@ package com.example.habithero.feature_auth.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habithero.core.domain.usecase.LoginUseCase
+import com.example.habithero.data.local.datasource.UserLocalDataSource
+import com.example.habithero.data.local.datastore.SessionDataStore
+import com.example.habithero.data.local.entity.UserEntity
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +16,9 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 class LoginViewModel(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val sessionDataStore: SessionDataStore,
+    private val userLocalDataSource: UserLocalDataSource
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -50,6 +55,17 @@ class LoginViewModel(
 
             try {
                 val result = loginUseCase(state.email, state.password)
+                sessionDataStore.saveToken(result.token)
+                sessionDataStore.saveUserId(result.userId)
+                sessionDataStore.setLoggedIn(true)
+                userLocalDataSource.saveUser(
+                    UserEntity(
+                        id = result.userId,
+                        name = result.name ?: "Usuario",
+                        username = state.email.substringBefore("@"),
+                        email = state.email
+                    )
+                )
                 _events.send(LoginEvent.NavigateToHome)
             } catch (e: IllegalArgumentException) {
                 _uiState.value = _uiState.value.copy(

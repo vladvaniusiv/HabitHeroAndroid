@@ -10,6 +10,7 @@ fun SettingsRoute(
     onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToStats: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -20,6 +21,7 @@ fun SettingsRoute(
                 SettingsEvent.NavigateBack -> onNavigateBack()
                 SettingsEvent.NavigateToHome -> onNavigateToHome()
                 SettingsEvent.NavigateToStats -> onNavigateToStats()
+                SettingsEvent.NavigateToLogin -> onNavigateToLogin()
                 is SettingsEvent.ShowMessage -> {
                     // TODO: Snackbar o Toast
                 }

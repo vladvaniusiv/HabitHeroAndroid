@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val sessionDataStore: com.example.habithero.data.local.datastore.SessionDataStore,
+    private val database: com.example.habithero.data.local.database.HabitHeroDatabase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState(isLoading = true))
@@ -39,6 +41,22 @@ class SettingsViewModel(
 
     fun onAction(action: SettingsAction) {
         when (action) {
+            SettingsAction.OnLogoutClicked -> {
+                viewModelScope.launch {
+                    _uiState.update { it.copy(isLoading = true) }
+
+                    // 1. Limpiar las tablas locales de Room de la base de datos
+                    database.clearAllTables()
+
+                    // 2. Limpiar el token, userId e isLoggedIn de DataStore
+                    sessionDataStore.clearSession()
+
+                    _uiState.update { it.copy(isLoading = false) }
+
+                    // 3. Emitir evento de navegación
+                    _events.send(SettingsEvent.NavigateToLogin)
+                }
+            }
             is SettingsAction.OnNameChanged -> _uiState.update { it.copy(name = action.name) }
 
             is SettingsAction.OnUserNameChanged -> {

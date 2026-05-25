@@ -29,22 +29,17 @@ class HabitRepositoryImpl(
         local.saveHabits(listOf(habit.toEntity()))
     }
 
-    override fun getHabitsForUser(userId: Int): Flow<List<Habit>> = flow {
-
-        emitAll(
-            local.getHabits(userId)
-                .map { list -> list.map { it.toDomain() } }
-        )
-
-        try {
+    override fun getHabitsForUser(userId: Int): Flow<List<Habit>> {
+        return flow {
             val token = sessionDataStore.token.first() ?: ""
             if (token.isNotEmpty()) {
-                val remoteHabits = remote.getHabits(token)
-                local.saveHabits(remoteHabits.map { it.toEntity() })
-                emit(remoteHabits.map { it.toDomain() })
+                val remote = remote.getHabits(token)
+                local.saveHabits(remote.map { it.toEntity() })
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+            emitAll(
+                local.getHabits(userId)
+                    .map { it.map { e -> e.toDomain() } }
+            )
         }
     }
 

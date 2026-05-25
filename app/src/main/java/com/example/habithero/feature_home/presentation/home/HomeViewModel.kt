@@ -5,66 +5,87 @@ import androidx.lifecycle.viewModelScope
 import com.example.habithero.core.domain.model.Habit
 import com.example.habithero.core.domain.repository.HabitRepository
 import com.example.habithero.core.domain.usecase.CreateHabitUseCase
+import com.example.habithero.data.local.datasource.UserLocalDataSource
+import com.example.habithero.data.local.datastore.SessionDataStore
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val habitRepository: HabitRepository,
-    private val createHabitUseCase: CreateHabitUseCase
+    private val createHabitUseCase: CreateHabitUseCase,
+    private val sessionDataStore: SessionDataStore,
+    private val userLocalDataSource: UserLocalDataSource
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState = _uiState.asStateFlow()
 
     private val _events = Channel<HomeEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    init {
-        loadHabits()
-    }
+    private var currentUserId: Int? = null
 
-    private fun loadHabits() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            habitRepository.getHabitsForUser(userId = 1)
-                .catch { e ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+    // El único uiState que debe existir (Reactivo)
+    val uiState: StateFlow<HomeUiState> = sessionDataStore.userId
+        .onEach { id -> currentUserId = id }
+        .flatMapLatest { userId ->
+            if (userId != null) {
+                combine(
+                    habitRepository.getHabitsForUser(userId),
+                    userLocalDataSource.getUser()
+                ) { habitsList, userEntity ->
+                    HomeUiState(
+                        habits = habitsList.map { it.title to false },
+                        name = userEntity?.name ?: "Usuario",
+                        username = userEntity?.username ?: "sin_username",
+                        isLoading = false
+                    )
                 }
-                .collect { list ->
-                    _uiState.update { state ->
-                        state.copy(
-                            habits = list.map { it.title to false },
-                            isLoading = false
-                        )
+                    .catch { e ->
+                        emit(HomeUiState(errorMessage = e.message, isLoading = false))
                     }
-                }
+            } else {
+                flowOf(HomeUiState(habits = emptyList(), isLoading = false))
+            }
         }
-    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeUiState(isLoading = true)
+        )
 
     fun onAction(action: HomeAction) {
         when (action) {
-
-            is HomeAction.OnToggleHabit -> {
-                _uiState.value = _uiState.value.copy(
-                    habits = _uiState.value.habits.map {
-                        if (it.first == action.habitName) action.habitName to action.completed else it
+            is HomeAction.OnCreateHabitSubmitted -> {
+                val userId = currentUserId ?: return
+                viewModelScope.launch {
+                    try {
+                        val newHabit = Habit(
+                            id = 0,
+                            title = action.title,
+                            description = "Hábito creado desde el móvil",
+                            userId = userId
+                        )
+                        createHabitUseCase(newHabit)
+                        // Al ser reactivo, la base de datos notificará sola, no necesitas llamar a loadHabits()
+                    } catch (e: Exception) {
+                        println("Error al crear hábito: ${e.message}")
                     }
-                )
+                }
             }
-
-            HomeAction.OnRefresh -> loadHabits()
-
-            is HomeAction.OnHabitClicked -> {
-                viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) }
+            is HomeAction.OnToggleHabit -> {
+                // Si necesitas modificar el estado del toggle localmente sin persistir aún en la BD,
+                // idealmente deberías manejar un MutableStateFlow interno o delegarlo al repositorio/caso de uso.
             }
-
-            HomeAction.OnSettingsClicked -> {
-                viewModelScope.launch { _events.send(HomeEvent.NavigateToSettings) }
+            is HomeAction.OnAvatarSelected -> {
+                viewModelScope.launch {
+                    println("Imagen capturada con éxito. Tamaño en bytes: ${action.imageBytes.size}")
+                }
             }
-
-            HomeAction.OnStatsClicked -> {
-                viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) }
-            }
+            HomeAction.OnRefresh -> { /* Se refresca automáticamente al cambiar la BD */ }
+            is HomeAction.OnHabitClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) } }
+            HomeAction.OnSettingsClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToSettings) } }
+            HomeAction.OnStatsClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) } }
         }
     }
 }

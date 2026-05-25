@@ -45,7 +45,7 @@ fun ChangePasswordSection(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(stringResource(R.string.change_passw_title), style = MaterialTheme.typography.titleMedium)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // Campo Contraseña Actual
         OutlinedTextField(
@@ -61,7 +61,7 @@ fun ChangePasswordSection(
             }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         // Campo Nueva Contraseña
         OutlinedTextField(
@@ -77,7 +77,7 @@ fun ChangePasswordSection(
             }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         // Campo Confirmar Contraseña
         OutlinedTextField(

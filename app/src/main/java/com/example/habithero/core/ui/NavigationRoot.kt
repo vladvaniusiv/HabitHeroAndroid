@@ -64,7 +64,12 @@ fun NavigationRoot(navController: NavHostController = rememberNavController()) {
             SettingsRoute(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToHome = { navController.navigate(Routes.HOME) },
-                onNavigateToStats = { navController.navigate(Routes.STATS) }
+                onNavigateToStats = { navController.navigate(Routes.STATS) },
+                onNavigateToLogin = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

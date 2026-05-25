@@ -13,9 +13,9 @@ import org.koin.dsl.module
 @RequiresApi(Build.VERSION_CODES.O)
 val viewModelModule = module {
 
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(),get(),get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(),get(),get()) }
     viewModel { StatsViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(),get(),get()) }
 }

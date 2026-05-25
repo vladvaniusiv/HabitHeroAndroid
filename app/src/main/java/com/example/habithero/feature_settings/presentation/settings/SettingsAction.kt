@@ -10,4 +10,5 @@ sealed interface SettingsAction {
     data object OnNavigateHome : SettingsAction
     data object OnNavigateStats : SettingsAction
     data object OnSaveProfile : SettingsAction
+    data object OnLogoutClicked : SettingsAction
 }
