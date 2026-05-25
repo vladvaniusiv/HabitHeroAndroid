@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 class SettingsLocalDataSource(
     private val dao: UserDao
 ) {
-    fun getUserData(): Flow<UserEntity?> = dao.getUser()
+    fun getUserData(userId: Int): Flow<UserEntity?> = dao.getUserById(userId)
 
     suspend fun saveUserData(user: UserEntity) = dao.insertUser(user)
 
-    suspend fun updateProfile(name: String, username: String, email: String) {
-        dao.updateProfile(name, username, email)
+    suspend fun updateProfile(id: Int, name: String, username: String, email: String) {
+        dao.updateProfile(id, name, username, email)
     }
 }

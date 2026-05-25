@@ -32,7 +32,7 @@ class HomeViewModel(
             if (userId != null) {
                 combine(
                     habitRepository.getHabitsForUser(userId),
-                    userLocalDataSource.getUser()
+                    userLocalDataSource.getUser(userId)
                 ) { habitsList, userEntity ->
                     HomeUiState(
                         habits = habitsList.map { it.title to false },

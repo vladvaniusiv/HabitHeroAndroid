@@ -33,22 +33,25 @@ class SettingsRepositoryImpl(
     }
 
     override fun getUserData(): Flow<User> = flow {
-        // 1. Emitir local inmediatamente (usamos filterNotNull por si la BD está vacía al inicio)
+        // 1. Obtener el ID del usuario activo de la sesión
+        val currentUserId = sessionDataStore.userId.first() ?: 0
+
+        // 2. Emitir local pasándole el ID que nos pide el DataSource actualizado
         emitAll(
-            local.getUserData()
+            local.getUserData(currentUserId)
                 .map { entity ->
-                    entity?.toDomain() ?: User(name = "", username = "", email = "", password = "")
+                    entity?.toDomain() ?: User(id = currentUserId, name = "", username = "", email = "", password = "")
                 }
         )
 
         try {
             val token = sessionDataStore.token.first() ?: ""
             if (token.isNotEmpty()) {
-                // 2. Obtener remoto fresco
+                // 3. Obtener remoto fresco
                 val remoteUser = remote.getUserProfile(token)
-                // 3. Guardar en local cacheando la info
+                // 4. Guardar en local cacheando la info
                 local.saveUserData(remoteUser.toEntity())
-                // 4. Emitir el último cambio de la red
+                // 5. Emitir el último cambio de la red
                 emit(remoteUser.toDomain())
             }
         } catch (e: Exception) {
@@ -81,9 +84,14 @@ class SettingsRepositoryImpl(
     override suspend fun updateProfile(name: String, username: String, email: String): Result<Unit> {
         return try {
             val token = sessionDataStore.token.first() ?: ""
-            if (token.isNotEmpty()) {
+            val currentUserId = sessionDataStore.userId.first() // <-- AÑADIR ESTO
+
+            if (token.isNotEmpty() && currentUserId != null) {
                 remote.updateProfile(token, UpdateProfileDto(name, username, email))
-                local.updateProfile(name, username, email)
+
+                // Pasaremos el ID aquí (ahora corregiremos el DataSource/DAO para que lo acepte)
+                local.updateProfile(currentUserId, name, username, email)
+
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("No se encontró una sesión activa"))

@@ -8,8 +8,8 @@ class UserLocalDataSource(
     private val dao: UserDao
 ) {
 
-    fun getUser(): Flow<UserEntity?> {
-        return dao.getUser()
+    fun getUser(userId: Int): Flow<UserEntity?> {
+        return dao.getUserById(userId)
     }
 
     suspend fun saveUser(user: UserEntity) {
