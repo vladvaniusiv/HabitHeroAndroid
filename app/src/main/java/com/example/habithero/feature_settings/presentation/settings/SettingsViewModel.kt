@@ -80,16 +80,53 @@ class SettingsViewModel(
 
             is SettingsAction.OnPasswordChange -> {
                 viewModelScope.launch {
-                    if (action.new != action.confirm) {
-                        _events.send(SettingsEvent.ShowMessage("Las contraseñas no coinciden"))
-                        return@launch
+                    _uiState.update {
+                        it.copy(
+                            currentPasswordError = null,
+                            newPasswordError = null,
+                            confirmPasswordError = null
+                        )
                     }
+
+                    var hasError = false
+                    val currentPassword = action.current
+                    val newPassword = action.new
+                    val confirmPassword = action.confirm
+
+                    // Validación A: Menos de 8 caracteres
+                    if (newPassword.length < 8) {
+                        _uiState.update { it.copy(newPasswordError = "La contraseña debe tener al menos 8 caracteres") }
+                        hasError = true
+                    }
+
+                    // Validación B: Igual que la anterior
+                    if (newPassword == currentPassword && currentPassword.isNotEmpty()) {
+                        _uiState.update { it.copy(newPasswordError = "La nueva contraseña no puede ser igual a la actual") }
+                        hasError = true
+                    }
+
+                    // Validación C: No coinciden
+                    if (newPassword != confirmPassword) {
+                        _uiState.update { it.copy(confirmPasswordError = "Las contraseñas no coinciden") }
+                        hasError = true
+                    }
+
+                    // Si alguna regla falló, frenamos la ejecución aquí
+                    if (hasError) return@launch
+
+                    // 2. Si todo está correcto, procesamos con el servidor
                     _uiState.update { it.copy(isLoading = true) }
-                    val result = settingsRepository.updatePassword(action.current, action.new)
+                    val result = settingsRepository.updatePassword(currentPassword, newPassword)
                     _uiState.update { it.copy(isLoading = false) }
+
                     result.fold(
-                        onSuccess = { _events.send(SettingsEvent.ShowMessage("Contraseña actualizada exitosamente")) },
-                        onFailure = { e -> _events.send(SettingsEvent.ShowMessage(e.message ?: "Error al actualizar contraseña")) }
+                        onSuccess = {
+                            _events.send(SettingsEvent.ShowMessage("Contraseña actualizada exitosamente"))
+                        },
+                        onFailure = { e ->
+                            // Si el servidor rechaza la contraseña actual por incorrecta, lo capturamos aquí
+                            _uiState.update { it.copy(currentPasswordError = e.message ?: "Contraseña actual incorrecta") }
+                        }
                     )
                 }
             }

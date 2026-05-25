@@ -8,5 +8,8 @@ data class SettingsUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val userNameError: String? = null,
-    val emailError: String? = null
+    val emailError: String? = null,
+    val currentPasswordError: String? = null,
+    val newPasswordError: String? = null,
+    val confirmPasswordError: String? = null
 )

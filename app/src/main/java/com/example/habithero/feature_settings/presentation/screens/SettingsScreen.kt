@@ -19,8 +19,8 @@ import com.example.habithero.core.designsystem.HabitHeroTheme
 import com.example.habithero.core.ui.Routes
 import com.example.habithero.core.ui.components.BottomBar
 import com.example.habithero.core.ui.components.TopBar
-import com.example.habithero.feature_settings.presentation.ChangePasswordSection
 import com.example.habithero.feature_settings.presentation.ProfileSection
+import com.example.habithero.feature_settings.presentation.components.ChangePasswordSection
 import com.example.habithero.feature_settings.presentation.settings.SettingsAction
 import com.example.habithero.feature_settings.presentation.settings.SettingsUiState
 
@@ -70,6 +70,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             ChangePasswordSection(
+                state = uiState,
                 onPasswordChange = { current, new, confirm ->
                     onAction(SettingsAction.OnPasswordChange(current, new, confirm))
                 }

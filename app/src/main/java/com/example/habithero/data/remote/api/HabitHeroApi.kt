@@ -68,7 +68,7 @@ interface HabitHeroApi {
         @Body body: UpdateProfileDto
     )
 
-    @PUT("settings/change-password")
+    @PUT("change-password")
     suspend fun updatePassword(
         @Header("Authorization") token: String,
         @Body body: UpdatePasswordRequestDto
