@@ -48,7 +48,7 @@ fun HomeScreen(
 ){
     val habits = uiState.habits
     val progress = if (habits.isNotEmpty()) {
-        habits.count { it.second }.toFloat() / habits.size
+        habits.count { it.active }.toFloat() / habits.size // <-- CAMBIAR it.second por it.active
     } else 0f
     var showDialog by remember { mutableStateOf(false) }
     var newHabitTitle by remember { mutableStateOf("") }
@@ -152,8 +152,8 @@ fun HomeScreen(
             // Lista de hábitos
             HabitList(
                 habits = habits,
-                onHabitChecked = { habitName, checked ->
-                    onAction(HomeAction.OnToggleHabit(habitName, checked))
+                onHabitChecked = { habitId, checked -> // <-- CAMBIAR habitName por habitId
+                    onAction(HomeAction.OnToggleHabit(habitId, checked)) // <-- Ahora envía el Int correctamente
                 },
                 onCreateHabit = {
                     showDialog = true

@@ -19,4 +19,7 @@ interface HabitProgressDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProgress(progress: List<HabitProgressEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSingleProgress(progress: HabitProgressEntity)
 }

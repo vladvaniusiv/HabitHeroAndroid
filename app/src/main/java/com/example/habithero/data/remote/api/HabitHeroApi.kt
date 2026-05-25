@@ -14,6 +14,7 @@ import com.example.habithero.data.remote.dto.WeeklyStatsRequestDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -73,4 +74,11 @@ interface HabitHeroApi {
         @Header("Authorization") token: String,
         @Body body: UpdatePasswordRequestDto
     )
+
+    @PATCH("habits/{habitId}/toggle")
+    suspend fun toggleHabit(
+        @Header("Authorization") token: String,
+        @Path("habitId") habitId: Int,
+        @Body request: com.example.habithero.data.remote.dto.ToggleHabitRequestDto
+    ): retrofit2.Response<Unit>
 }

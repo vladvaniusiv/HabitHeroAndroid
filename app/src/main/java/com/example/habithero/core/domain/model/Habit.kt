@@ -5,5 +5,5 @@ data class Habit(
     val userId: Int,
     val title: String,
     val description: String,
-    val active: Boolean = true
+    val active: Boolean = false
 )

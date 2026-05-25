@@ -16,7 +16,7 @@ val dataSourceModule = module {
     single { StatsRemoteDataSource(get()) }
 
     // Local
-    single { HabitLocalDataSource(get()) }
+    single { HabitLocalDataSource(get(),get()) }
     single { StatsLocalDataSource(get()) }
     single { UserLocalDataSource(get()) }
 }

@@ -3,6 +3,7 @@ package com.example.habithero.feature_home.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habithero.core.domain.model.Habit
+import com.example.habithero.core.domain.model.HabitProgress
 import com.example.habithero.core.domain.repository.HabitRepository
 import com.example.habithero.core.domain.usecase.CreateHabitUseCase
 import com.example.habithero.data.local.datasource.UserLocalDataSource
@@ -11,6 +12,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
@@ -25,7 +29,6 @@ class HomeViewModel(
 
     private var currentUserId: Int? = null
 
-    // El único uiState que debe existir (Reactivo)
     val uiState: StateFlow<HomeUiState> = sessionDataStore.userId
         .onEach { id -> currentUserId = id }
         .flatMapLatest { userId ->
@@ -35,7 +38,7 @@ class HomeViewModel(
                     userLocalDataSource.getUser(userId)
                 ) { habitsList, userEntity ->
                     HomeUiState(
-                        habits = habitsList.map { it.title to false },
+                        habits = habitsList,
                         name = userEntity?.name ?: "Usuario",
                         username = userEntity?.username ?: "sin_username",
                         isLoading = false
@@ -56,6 +59,25 @@ class HomeViewModel(
 
     fun onAction(action: HomeAction) {
         when (action) {
+            is HomeAction.OnToggleHabit -> {
+                viewModelScope.launch {
+                    val habitId = action.habitId
+                    val isChecked = action.completed
+
+                    // Solución API 24: Usar SimpleDateFormat en lugar de java.time.LocalDate
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val currentDateString = sdf.format(Date())
+
+                    val currentProgress = HabitProgress(
+                        id = 0,
+                        habitId = habitId,
+                        date = currentDateString,
+                        completed = isChecked
+                    )
+
+                    habitRepository.toggleHabitProgress(currentProgress)
+                }
+            }
             is HomeAction.OnCreateHabitSubmitted -> {
                 val userId = currentUserId ?: return
                 viewModelScope.launch {
@@ -67,22 +89,18 @@ class HomeViewModel(
                             userId = userId
                         )
                         createHabitUseCase(newHabit)
-                        // Al ser reactivo, la base de datos notificará sola, no necesitas llamar a loadHabits()
                     } catch (e: Exception) {
                         println("Error al crear hábito: ${e.message}")
                     }
                 }
             }
-            is HomeAction.OnToggleHabit -> {
-                // Si necesitas modificar el estado del toggle localmente sin persistir aún en la BD,
-                // idealmente deberías manejar un MutableStateFlow interno o delegarlo al repositorio/caso de uso.
-            }
+            // SE ELIMINÓ EL BLOQUE DUPLICADO DE ONTOGGLEHABIT QUE ESTABA AQUÍ
             is HomeAction.OnAvatarSelected -> {
                 viewModelScope.launch {
                     println("Imagen capturada con éxito. Tamaño en bytes: ${action.imageBytes.size}")
                 }
             }
-            HomeAction.OnRefresh -> { /* Se refresca automáticamente al cambiar la BD */ }
+            HomeAction.OnRefresh -> { }
             is HomeAction.OnHabitClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) } }
             HomeAction.OnSettingsClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToSettings) } }
             HomeAction.OnStatsClicked -> { viewModelScope.launch { _events.send(HomeEvent.NavigateToStats) } }

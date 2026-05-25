@@ -3,6 +3,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habithero.core.domain.model.User
 import com.example.habithero.core.domain.usecase.RegisterUseCase
+import com.example.habithero.data.local.datastore.SessionDataStore
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -10,7 +11,8 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 class RegisterViewModel(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val sessionDataStore: SessionDataStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -65,7 +67,7 @@ class RegisterViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                registerUseCase(
+                val loginResult = registerUseCase(
                     User(
                         id = null,
                         name = state.name,
@@ -74,6 +76,9 @@ class RegisterViewModel(
                         password = state.password
                     )
                 )
+                sessionDataStore.saveToken("Bearer ${loginResult.token}")
+                sessionDataStore.saveUserId(loginResult.userId)
+                sessionDataStore.setLoggedIn(true)
                 _events.send(RegisterEvent.NavigateToHome)
 
             } catch (e: IllegalArgumentException) {

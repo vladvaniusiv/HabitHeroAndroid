@@ -18,11 +18,12 @@ import androidx.compose.ui.unit.dp
 import com.example.habithero.R
 import com.example.habithero.core.designsystem.BrandGreen
 import com.example.habithero.core.designsystem.HabitHeroShapes
+import com.example.habithero.core.domain.model.Habit
 
 @Composable
 fun HabitList(
-    habits: List<Pair<String, Boolean>>,
-    onHabitChecked: (String, Boolean) -> Unit,
+    habits: List<Habit>,
+    onHabitChecked: (Int, Boolean) -> Unit,
     onCreateHabit: () -> Unit
 ) {
     Column(
@@ -39,11 +40,14 @@ fun HabitList(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        habits.forEach { (name, completed) ->
+        habits.forEach { habit ->
             HabitItem(
-                habitName = name,
-                isCompleted = completed,
-                onCheckedChange = { onHabitChecked(name, it) }
+                habitName = habit.title,
+                isCompleted = habit.active, // Aquí debes mapear si está completado hoy usando tu lógica local
+                onCheckedChange = { isChecked ->
+                    // Como el ID es opcional (Int?), usamos el operador Elvis o un fallback por seguridad (?: 0)
+                    onHabitChecked(habit.id ?: 0, isChecked)
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -65,8 +69,8 @@ fun HabitListPreview() {
     MaterialTheme {
         HabitList(
             habits = listOf(
-                "Hacer ejercicio" to false,
-                "Leer 20 páginas" to true
+                Habit(id = 1, title = "Hacer ejercicio", description = "", userId = 1, active = false),
+                Habit(id = 2, title = "Leer 20 páginas", description = "", userId = 1, active = true)
             ),
             onHabitChecked = { _, _ -> },
             onCreateHabit = {}

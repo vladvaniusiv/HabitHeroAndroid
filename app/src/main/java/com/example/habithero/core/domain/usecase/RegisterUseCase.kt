@@ -1,5 +1,6 @@
 package com.example.habithero.core.domain.usecase
 
+import com.example.habithero.core.domain.model.LoginResult
 import com.example.habithero.core.domain.model.User
 import com.example.habithero.core.domain.repository.AuthRepository
 
@@ -7,7 +8,7 @@ class RegisterUseCase(
     private val repository: AuthRepository
 ) {
 
-    suspend operator fun invoke(user: User) {
+    suspend operator fun invoke(user: User): LoginResult {
         if (user.name.isBlank()) {
             throw IllegalArgumentException("El nombre no puede estar vacío")
         }
@@ -21,6 +22,6 @@ class RegisterUseCase(
             throw IllegalArgumentException("La contraseña debe tener al menos 4 caracteres")
         }
 
-        repository.register(user)
+        return repository.register(user)
     }
 }

@@ -30,7 +30,7 @@ fun HabitProgress.toEntity() = HabitProgressEntity(
 
 // Domain → DTO
 fun HabitProgress.toDto() = HabitProgressDto(
-    id = id,
+    id = id ?: 0,
     habitId = habitId,
     date = date,
     completed = completed

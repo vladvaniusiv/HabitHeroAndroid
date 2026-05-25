@@ -14,4 +14,13 @@ class HabitRemoteDataSource(
     suspend fun createHabit(token: String, habit: HabitDto) {
         api.createHabit("Bearer $token", habit)
     }
+
+    suspend fun toggleHabit(
+        token: String,
+        habitId: Int,
+        request: com.example.habithero.data.remote.dto.ToggleHabitRequestDto
+    ): retrofit2.Response<Unit> {
+        // Suponiendo que tu propiedad de la interfaz de Retrofit se llama 'api'
+        return api.toggleHabit(token, habitId, request)
+    }
 }
